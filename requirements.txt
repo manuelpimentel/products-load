@@ -1,0 +1,5 @@
+pymongo
+dotenv
+fastapi
+uvicorn
+openai>=1.14.3
