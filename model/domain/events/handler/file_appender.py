@@ -1,6 +1,13 @@
 from typing import Any
 import os
 import json
+import logging
+
+logger = logging.getLogger(__name__)
+
+# Validation: check if service with same instagram already exists
+def get_instagram(entry):
+    return entry.get("instagram") if isinstance(entry, dict) else None
 
 def to_pending_loads(date_str: str, new_data: Any) -> None:
     """
@@ -11,8 +18,6 @@ def to_pending_loads(date_str: str, new_data: Any) -> None:
         date_str: Date string in ddMMyy format.
         new_data: Data to append (dict or list).
     """
-    print(f"[DEBUG] to_pending_loads called with date_str={date_str}")
-    print(f"[DEBUG] new_data={new_data}")
 
     project_root = os.path.abspath(
         os.path.join(os.path.dirname(__file__), "../../../..")
@@ -22,33 +27,34 @@ def to_pending_loads(date_str: str, new_data: Any) -> None:
     filename = f"load_{date_str}.json"
     pending_file = os.path.join(pending_dir, filename)
 
-    print(f"[DEBUG] pending_dir={pending_dir}")
-    print(f"[DEBUG] pending_file={pending_file}")
-
     if not os.path.exists(pending_dir):
-        print(f"[DEBUG] pending_dir does not exist, creating...")
         os.makedirs(pending_dir)
+        logger.info(f"Created directory: {pending_dir}")
 
     if os.path.exists(pending_file):
-        print(f"[DEBUG] pending_file exists, loading...")
         with open(pending_file, "r", encoding="utf-8") as f:
             data = json.load(f)
     else:
-        print(f"[DEBUG] pending_file does not exist, initializing empty list")
         data = []
 
-    print(f"[DEBUG] data before append: {data}")
+    existing_instagrams = {get_instagram(entry) for entry in data if get_instagram(entry)}
 
-    if isinstance(new_data, list):
-        data.extend(new_data)
-    else:
-        data.append(new_data)
+    # Support both dict and list for new_data
+    new_entries = new_data if isinstance(new_data, list) else [new_data]
+    filtered_new_entries = [
+        entry for entry in new_entries
+        if get_instagram(entry) not in existing_instagrams
+    ]
 
-    print(f"[DEBUG] data after append: {data}")
+    if not filtered_new_entries:
+        logger.info("No new entries to append (all instagram values already exist).")
+        return
+
+    data.extend(filtered_new_entries)
 
     try:
         with open(pending_file, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
-        print(f"[DEBUG] Successfully wrote to {pending_file}")
+        logger.info(f"Appended data to {pending_file}")
     except Exception as e:
-        print(f"[ERROR] Failed to write to {pending_file}: {e}")
+        logger.error(f"Failed to write to {pending_file}: {e}")
