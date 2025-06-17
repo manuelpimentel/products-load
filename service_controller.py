@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from model.domain.request import Request
-from llm.messages_mapper import map_request_to_messages
+from model.domain.load import Load
+from llm.load_mapper import map_load_to_products
 from llm.llm_executor import LlmExecutor
 import json
 import os
@@ -22,12 +22,12 @@ def health_check():
 
 
 @app.post("/load")
-async def load_service(request: Request):
-    messages = map_request_to_messages(request)
+async def load_service(load: Load):
+    messages = map_load_to_products(load)
     try:
         service_loaded = json.loads(
             LlmExecutor().run_completion(
-                f"instagram:{request.instagram} messages: {messages}"
+                f"instagram:{load.instagram} messages: {messages}"
             )
         )
         LoadProductsPublisher(service_loaded).publish()

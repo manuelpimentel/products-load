@@ -2,7 +2,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 
-class Request(BaseModel):
+class Load(BaseModel):
     id: Optional[str] = None
     instagram: str
     content: str = None
