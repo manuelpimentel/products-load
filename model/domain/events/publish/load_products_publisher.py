@@ -14,5 +14,7 @@ class LoadProductsPublisher:
 
     def publish(self):
         print("Publishing ServiceIdentified event")
+        
         LoadProductsHandler(self.event).handle()
         return self.event
+
