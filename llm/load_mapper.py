@@ -1,7 +1,7 @@
-from model.domain.load import Load
+from api.model.load_attempt import LoadAttempt
 
 
-def map_load_to_content(load: Load):
+def map_load_to_content(load: LoadAttempt):
     messages = []
     if load.content:
         messages.append({"type": "text", "text": load.content})

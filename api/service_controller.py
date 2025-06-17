@@ -9,6 +9,7 @@ import json
 from model.domain.events.publish.load_products_publisher import (
     LoadProductsPublisher,
 )
+from api.model.load_attempt import LoadAttempt
 
 app = FastAPI()
 
@@ -17,9 +18,8 @@ app = FastAPI()
 def health_check():
     return JSONResponse(content={"status": "ok"})
 
-
 @app.post("/load")
-async def load_service(load: Load):
+async def load_service(load: LoadAttempt):
     content = map_load_to_content(load)
     try:
         service_loaded = json.loads(
@@ -45,5 +45,23 @@ async def load_service(load: Load):
             "id": service_loaded.get("id", None),
         }
     )
+
+@app.post("/validate")
+def validate_load(load: Load):
+    """
+    Endpoint to validate the service load.
+    """
+    try:
+        content = map_load_to_content(load)
+        # Here you can add validation logic if needed
+        return JSONResponse(
+            content={"message": "Service load is valid", "content": content}
+        )
+    except Exception as e:
+        logging.error(f"Validation error: {e}")
+        return JSONResponse(
+            content={"message": "Validation failed", "error": str(e)},
+            status_code=400,
+        )
 
 logging.basicConfig(level=logging.INFO)  # Add this line to enable INFO logs to console
