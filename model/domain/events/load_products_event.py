@@ -2,7 +2,7 @@ import time
 import uuid
 
 
-class ServiceIdentifiedEvent:
+class LoadProductsEvent:
     def __init__(
         self,
         instagram: str,
@@ -18,11 +18,11 @@ class ServiceIdentifiedEvent:
         self.products = products if products is not None else []
 
     def __repr__(self):
-        return f"<ServiceIdentifiedEvent service_id={self.service_id} timestamp={self.timestamp}>"
+        return f"<LoadProductsEvent service_id={self.service_id} timestamp={self.timestamp}>"
 
     @staticmethod
     def build_event(instagram: str, summary: str, products: list[dict] = None):
-        return ServiceIdentifiedEvent(
+        return LoadProductsEvent(
             instagram=instagram,
             summary=summary,
             products=products if products is not None else [],

@@ -5,13 +5,12 @@ from llm.messages_mapper import map_request_to_messages
 from llm.llm_executor import LlmExecutor
 import json
 import os
-from model.domain.events.service_identified_event import ServiceIdentifiedEvent
 from datetime import datetime
-from model.domain.events.handler.service_identified_handler import (
-    ServiceIdentifiedHandler,
+from model.domain.events.handler.load_products_handler import (
+    LoadProductsHandler,
 )
-from model.domain.events.publish.service_identified_publisher import (
-    ServiceIdentifiedPublisher,
+from model.domain.events.publish.load_products_publisher import (
+    LoadProductsPublisher,
 )
 
 app = FastAPI()
@@ -31,7 +30,7 @@ async def load_service(request: Request):
                 f"instagram:{request.instagram} messages: {messages}"
             )
         )
-        ServiceIdentifiedPublisher(service_loaded).publish()
+        LoadProductsPublisher(service_loaded).publish()
 
     except Exception as e:
         print("Error during LLM execution:", e)

@@ -1,12 +1,12 @@
-from model.domain.events.service_identified_event import ServiceIdentifiedEvent
-from model.domain.events.handler.service_identified_handler import (
-    ServiceIdentifiedHandler,
+from model.domain.events.load_products_event import LoadProductsEvent
+from model.domain.events.handler.load_products_handler import (
+    LoadProductsHandler,
 )
 
 
-class ServiceIdentifiedPublisher:
+class LoadProductsPublisher:
     def __init__(self, service_loaded: dict = None):
-        self.event = ServiceIdentifiedEvent.build_event(
+        self.event = LoadProductsEvent.build_event(
             instagram=service_loaded.get("instagram", ""),
             summary=service_loaded.get("summary", ""),
             products=service_loaded.get("products", []),
@@ -14,5 +14,5 @@ class ServiceIdentifiedPublisher:
 
     def publish(self):
         print("Publishing ServiceIdentified event")
-        ServiceIdentifiedHandler(self.event).handle()
+        LoadProductsHandler(self.event).handle()
         return self.event
