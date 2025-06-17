@@ -3,7 +3,7 @@ from model.domain.events.load_products_event import LoadProductsEvent
 import os
 import json
 from datetime import datetime
-from model.domain.events.handler.file_appender import to_pending_loads
+from model.domain.events.handler.load_procucts_file_system import to_pending_loads
 
 
 class LoadProductsHandler:

@@ -5,9 +5,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 # Validation: check if service with same instagram already exists
 def get_instagram(entry):
     return entry.get("instagram") if isinstance(entry, dict) else None
+
 
 def to_pending_loads(date_str: str, new_data: Any) -> None:
     """
@@ -37,18 +39,10 @@ def to_pending_loads(date_str: str, new_data: Any) -> None:
     else:
         data = []
 
-    existing_instagrams = {get_instagram(entry) for entry in data if get_instagram(entry)}
-
-    # Support both dict and list for new_data
-    new_entries = new_data if isinstance(new_data, list) else [new_data]
-    filtered_new_entries = [
-        entry for entry in new_entries
-        if get_instagram(entry) not in existing_instagrams
-    ]
-
+    filtered_new_entries = filter_new_entries(data, new_data)
     if not filtered_new_entries:
         logger.info("No new entries to append (all instagram values already exist).")
-        return
+        return []
 
     data.extend(filtered_new_entries)
 
@@ -58,3 +52,15 @@ def to_pending_loads(date_str: str, new_data: Any) -> None:
         logger.info(f"Appended data to {pending_file}")
     except Exception as e:
         logger.error(f"Failed to write to {pending_file}: {e}")
+
+
+def filter_new_entries(existing_data, new_data):
+    existing_instagrams = {
+        get_instagram(entry) for entry in existing_data if get_instagram(entry)
+    }
+    new_entries = new_data if isinstance(new_data, list) else [new_data]
+    return [
+        entry
+        for entry in new_entries
+        if get_instagram(entry) not in existing_instagrams
+    ]
