@@ -32,7 +32,7 @@ Use the following schema as your reference (JSON structure) and avoid returning 
 7. Use the current date for both `"createdAt"` and `"modifiedAt"` in every product.
 8. If the Instagram handle is missing "@", add it.
 9. Avoid line jumps (`\n`) in the response.
-10. Add a `"summary"` field to the root object. This should be a short paragraph in human language (in the same language as the original input), summarizing the extracted data (e.g. how many products were detected, what kind of services, and the business name or Instagram if present). This is meant to help audit the correctness of the generation. This field is important, do not leave it out
+10. Add a `"summary"` field to the root object. This should be a short paragraph in human language (in the same language as the original input), summarizing the extracted data (e.g. how many products were detected, what kind of services, and the business name or Instagram if present). This is meant to help audit the correctness of the generation. This field is important, do not leave it out. A;ways mention the prices if they're present.
 
 ---
 
