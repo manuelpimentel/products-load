@@ -1,14 +1,11 @@
-from typing import Any
-from model.domain.events.load_products_event import LoadProductsEvent
-import os
-import json
+from model.domain.events.products_load_requested_event import ProductsLoadRequestedEvent
 from datetime import datetime
 from model.domain.events.handler.load_procucts_file_system import to_pending_loads
 
 
 class LoadProductsHandler:
 
-    def __init__(self, event: LoadProductsEvent) -> None:
+    def __init__(self, event: ProductsLoadRequestedEvent) -> None:
         self.event = event
 
     def handle(self) -> None:

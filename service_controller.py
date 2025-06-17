@@ -1,7 +1,9 @@
+import uuid
+import logging
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from model.domain.load import Load
-from llm.load_mapper import map_load_to_products
+from llm.load_mapper import map_load_to_content
 from llm.llm_executor import LlmExecutor
 import json
 from model.domain.events.publish.load_products_publisher import (
@@ -18,13 +20,14 @@ def health_check():
 
 @app.post("/load")
 async def load_service(load: Load):
-    messages = map_load_to_products(load)
+    content = map_load_to_content(load)
     try:
         service_loaded = json.loads(
             LlmExecutor().run_completion(
-                f"instagram:{load.instagram} messages: {messages}"
+                f"instagram:{load.instagram} content: {content}"
             )
         )
+        service_loaded["id"] = str(uuid.uuid4())
         LoadProductsPublisher(service_loaded).publish()
 
     except Exception as e:
@@ -38,6 +41,9 @@ async def load_service(load: Load):
         content={
             "response": service_loaded.get(
                 "summary", "No pude generar un resumen, intenta de nuevo"
-            )
+            ),
+            "id": service_loaded.get("id", None),
         }
     )
+
+logging.basicConfig(level=logging.INFO)  # Add this line to enable INFO logs to console

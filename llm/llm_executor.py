@@ -4,7 +4,7 @@ from llm.prompt_constants import SYSTEM_PROMPT
 
 
 class IMessageBuilder:
-    """Interface for building messages for LLM loads."""
+    """Interface for building messages for LLM requests."""
 
     def build(self, user_content: List[Dict[str, Any]]) -> list:
         raise NotImplementedError
