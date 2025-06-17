@@ -4,11 +4,6 @@ from model.domain.load import Load
 from llm.load_mapper import map_load_to_products
 from llm.llm_executor import LlmExecutor
 import json
-import os
-from datetime import datetime
-from model.domain.events.handler.load_products_handler import (
-    LoadProductsHandler,
-)
 from model.domain.events.publish.load_products_publisher import (
     LoadProductsPublisher,
 )
