@@ -18,15 +18,28 @@ app = FastAPI()
 def health_check():
     return JSONResponse(content={"status": "ok"})
 
+
+@app.head("/health")
+def health_check():
+    return JSONResponse(content={"status": "ok"})
+
+
 @app.post("/load")
 async def load_service(load: LoadAttempt):
-    content = map_load_to_content(load)
-    try:
-        service_loaded = json.loads(
-            LlmExecutor().run_completion(
-                f"instagram:{load.instagram} content: {content}"
-            )
+    if not load.is_valid():
+        print("Invalid load attempt:", load)
+        return JSONResponse(
+            content={
+                "response": "Debes escribir el instagram del servicio. ejemplo: instagram: @viaia"
+            },
+            status_code=400,
         )
+        
+        
+    content = map_load_to_content(load)
+
+    try:
+        service_loaded = json.loads(LlmExecutor().run_completion(content))
         service_loaded["id"] = str(uuid.uuid4())
         LoadProductsPublisher(service_loaded).publish()
 
@@ -46,6 +59,7 @@ async def load_service(load: LoadAttempt):
         }
     )
 
+
 @app.post("/validate")
 def validate_load(load: Load):
     """
@@ -63,5 +77,6 @@ def validate_load(load: Load):
             content={"message": "Validation failed", "error": str(e)},
             status_code=400,
         )
+
 
 logging.basicConfig(level=logging.INFO)  # Add this line to enable INFO logs to console
